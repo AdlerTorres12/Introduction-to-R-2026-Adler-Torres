@@ -1,0 +1,14 @@
+---
+title: "Personal Webpage"
+author: "Adler Torres"
+date: "`r format(Sys.time(), '%Y-%b-%d, %I:%M %p')`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+---
+
+<center>
+<img src="C2D5CE89-BCA2-4324-90CF-5069E8E9390A.JPG" width="250" height="500"/>
+<center>
+
