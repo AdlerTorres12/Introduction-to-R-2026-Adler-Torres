@@ -1,0 +1,7 @@
+---
+title: "Assignment 1"
+author: "Adler Torres"
+date: "`r format(Sys.time(), '%Y-%b-%d, %I:%M %p')`"
+---
+
+# Hi Class
