@@ -8,11 +8,19 @@ output:
     highlight: github
 ---
 
-
+<center>
 <img src="C2D5CE89-BCA2-4324-90CF-5069E8E9390A.JPG" width="250" height="500"/>
+</center>
 
-# Hi Class
-### [Homework 1](Assignments/Assignment-1.html)
+# Greetings
+Hello every! My name is Adler Torres and during this August semester of 2026, I find myself taking the R courses as part of the course work for my Master in Biology. In this webpage you will find a brief overview of my journey up-until-now of obtaining this academic grade, and the various R tutorials required as part of the R course.
+
+## Academic Interest
+My academic interest mainly lays in learning how the natural world works and how to properly protect it. More specifically, I am working towards becoming a licensed Ethologist, an ecologist that focuses on studying animal behavior, with a specialization in arachnids. Why? Because they're cool honestly, and I have always thought that the behavior of these miniscule invertebrates has always been an under-explored part of science.  
+
+
+# R tutorials
+- [Homework 1](Assignments/Assignment-1.html)
 
 
 

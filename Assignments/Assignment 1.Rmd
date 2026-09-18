@@ -4,4 +4,86 @@ author: "Adler Torres"
 date: "`r format(Sys.time(), '%Y-%b-%d, %I:%M %p')`"
 ---
 
-# Hi Class
+## Assinging values
+#### Q1
+```{r} 
+height <- 175
+height
+```
+
+## Simple Math
+#### Q2
+```{r}
+25 * 4 - 10
+```
+
+## Using Functions
+Q3
+```{r}
+sqrt(81)
+```
+
+## Character Objects
+Q4
+```{r}
+Message <- "R is fun!"
+Message
+```
+
+## Object Manipulation
+Q5
+```{r}
+a <- 10
+b <- 5
+c <- a + b
+c
+```
+
+## Logical Comparison
+Q6
+```{r}
+15 > 20 
+```
+
+## Checking classes
+Q7
+```{r}
+class ("Hello World")
+```
+
+## Code Chunk Options
+Q8<br>
+Chunk with warnings shown
+```{r}
+log(-1)
+```
+Chunk with warnings hidden
+```{r warning=FALSE}
+log(-1)
+```
+Q9<br>
+Chunk with messages shown
+```{r}
+library(dplyr)
+```
+Chunk with messages hidden
+```{r messages=FALSE}
+library(dplyr)
+```
+
+## Creating and Analyzing a Vector
+Q10<br>
+Object does the function of mean()
+```{r}
+grades <- c(80,90,75,95,85)
+mean(grades)
+average <- mean(grades)
+average
+```
+
+Object does the function of 85
+```{r}
+average <- 85
+average
+```
+
