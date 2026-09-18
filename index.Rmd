@@ -1,10 +1,10 @@
 ---
-title: "Personal Webpage"
+title: "**Introduction to R 2026**"
 author: "Adler Torres"
 date: "`r format(Sys.time(), '%Y-%b-%d, %I:%M %p')`"
 output:
   prettydoc::html_pretty:
-    theme: cayman
+    theme: leonids
     highlight: github
 ---
 
@@ -21,6 +21,4 @@ My academic interest mainly lays in learning how the natural world works and how
 
 # R tutorials
 - [Homework 1](Assignments/Assignment-1.html)
-
-
 
