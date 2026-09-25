@@ -1,0 +1,84 @@
+---
+title: "Assignment 2"
+author: "Adler Torres"
+date: "`r format(Sys.time(), '%Y-%b-%d, %I:%M %p')`"
+output: html_document
+---
+
+### Preparation/Calling packages
+```{r message=F}
+library(dplyr)
+library(gapminder)
+```
+
+
+### Question 1
+```{r message=F}
+class(gapminder)
+```
+### Question 2
+```{r}
+gapminder |> 
+  filter (lifeExp < 29)
+
+```
+
+### Question 3 
+```{r}
+gapminder |> 
+  filter (country == "Rwanda",
+           year > 1979)
+```
+
+### Question 4
+```{r}
+Excluding <- gapminder |> 
+  select(!(gdpPercap))
+Excluding  
+```
+
+### Question 5
+```{r}
+Ascending <- gapminder |>
+  arrange(lifeExp)
+Ascending
+```
+
+### Question 6
+```{r}
+Descending <- gapminder |> 
+  arrange(desc(lifeExp))
+Descending
+```
+
+### Question 7
+```{r}
+Some_Columns <- gapminder |> 
+  select(year, lifeExp)
+Some_Columns
+```
+
+### Question 8
+```{r}
+Cambodia_data <- gapminder |> 
+  filter(country == "Cambodia")
+Cambodia_some <- Cambodia_data |> 
+  select(year, lifeExp)
+Cambodia_some
+```
+
+### Question 9
+```{r}
+Africa_Countries <- gapminder |> 
+  filter(continent == "Africa") |> 
+  select(country)
+Africa_Countries
+```
+
+### Question 10
+```{r}
+Life_in_Months <- gapminder |> 
+  mutate(lifeExp_months = lifeExp * 12)
+Life_in_Months
+```
+
