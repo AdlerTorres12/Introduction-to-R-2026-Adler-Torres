@@ -1,0 +1,101 @@
+---
+title: "Asignment 3: GGplot"
+author: "Adler Torres"
+date: "`r format(Sys.time(), '%Y-%b-%d, %I:%M %p')`"
+output: html_document
+---
+
+## Package Preparation
+```{r}
+library(ggplot2)
+data("trees")
+head(trees)
+```
+
+### Question 1
+#### Create a histogram showing distribution of Girth
+```{r message = FALSE}
+summary(trees)
+girth.histogram <- ggplot(data = trees,
+                          aes(x = Girth)) +
+  geom_histogram(fill = "pink") +
+  labs(title = "Histogram of Tree Girth",
+    x = "Girth of Trees",
+       y = "Count") +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)
+  )
+girth.histogram
+```
+
+### Question 2
+#### Create a histogram showing the distribution of Volume.
+```{r message = F}
+volume.histogram <- ggplot(data = trees,
+                           aes(x = Volume)) +
+  geom_histogram(fill = "orange") +
+  labs(title = "Histogram of Tree Volume",
+    x = "Volume of Trees",
+       y = "Count") +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)
+  )
+volume.histogram
+```
+
+### Question 3 
+#### Create a scatterplot showing the relationship between Girth and Volume
+```{r message = FALSE}
+trees.scatterplot <- ggplot(data = trees,
+                            aes(Girth, Volume)) +
+  geom_point(colour = "red") +
+  labs(title = "Relationship between Girth and Volume",
+    x = "Girth",
+       y = "Volume") +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)
+  )
+trees.scatterplot
+```
+
+### Question 4
+#### Use the Shapiro–Wilk test to assess whether Volume is normally distributed. Report the p-value and state whether the data are normally distributed.
+```{r warning = FALSE}
+Volume.aov <- aov(Volume ~ Volume, data = trees)
+```
+```{r}
+summary.aov(Volume.aov)
+```
+```{r}
+Volume.resid <- residuals(Volume.aov)
+shapiro.test(Volume.resid)
+```
+Thanks to the p-value resulting from this test being under 0.05, with a score of 0.003579, we can conclude that the data is NOT normally distributed thanks to there being signficant difference between data in this category. <br>
+<br>
+<br>
+
+### Question 5
+####  Repeat the Shapiro–Wilk test for Girth. Report the p-value and state whether Girth is normally distributed.
+```{r warning = FALSE}
+Girth.aov <- aov(Girth ~ Girth, data = trees)
+```
+```{r}
+summary.aov(Girth.aov)
+```
+```{r}
+Girth.resid <- residuals(Girth.aov)
+shapiro.test(Girth.resid)
+```
+Despite Volume showcasing a clear difference between data thanks to a low p-value, the Shapiro-Wilk test reveals that values pertaining to the category of Girth are normally distributed, thanks to a p-value over 0.05, that of which being 0.08893.
