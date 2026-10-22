@@ -11,9 +11,8 @@
 
 <meta name="author" content="Adler Torres" />
 
-<meta name="date" content="2026-10-22" />
 
-<title>Examenes</title>
+<title>Examen 1</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,14 +349,164 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Examenes</h1>
+<h1 class="title toc-ignore">Examen 1</h1>
 <h4 class="author">Adler Torres</h4>
-<h4 class="date">2026-10-22</h4>
+<h4 class="date">2026-Oct-22, 04:28 PM</h4>
 
 </div>
 
 
+<div id="package-installment-and-calling" class="section level3">
+<h3>Package Installment and Calling</h3>
+<pre class="r"><code>library(aod)
+library(dplyr)
+library(tidyverse)</code></pre>
+</div>
+<div id="object-creation" class="section level3">
+<h3>Object Creation</h3>
+<pre class="r"><code>msleep &lt;- glimpse(msleep)
+storms &lt;- storms
+lizards &lt;- lizards</code></pre>
+</div>
+<div id="calling-them" class="section level3">
+<h3>Calling them</h3>
+<pre class="r"><code>head (msleep)</code></pre>
+<pre class="r"><code>head(storms)</code></pre>
+<pre class="r"><code>head(lizards)</code></pre>
+</div>
+<div id="mammal-questions" class="section level2">
+<h2>Mammal Questions</h2>
+<ul>
+<li><ol style="list-style-type: decimal">
+<li>Use filter() to subset msleep to only animals who are awake for at
+least 12 hours of the day.</li>
+</ol></li>
+</ul>
+<pre class="r"><code>Awake_animal &lt;- msleep |&gt; 
+  filter(awake &gt;= 12) |&gt; 
+  arrange(awake)
+Awake_animal</code></pre>
+<pre><code>## # A tibble: 52 × 11
+##    name   genus vore  order conservation sleep_total sleep_rem sleep_cycle awake
+##    &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;
+##  1 Deer … Pero… &lt;NA&gt;  Rode… &lt;NA&gt;                11.5      NA         NA     12.5
+##  2 Cotto… Sigm… herbi Rode… &lt;NA&gt;                11.3       1.1        0.15  12.7
+##  3 Potor… Poto… herbi Dipr… &lt;NA&gt;                11.1       1.5       NA     12.9
+##  4 Slow … Nyct… carni Prim… &lt;NA&gt;                11        NA         NA     13  
+##  5 Potto  Pero… omni  Prim… lc                  11        NA         NA     13  
+##  6 Patas… Eryt… omni  Prim… lc                  10.9       1.1       NA     13.1
+##  7 Mole … Spal… &lt;NA&gt;  Rode… &lt;NA&gt;                10.6       2.4       NA     13.4
+##  8 Jaguar Pant… carni Carn… nt                  10.4      NA         NA     13.6
+##  9 Star-… Cond… omni  Sori… lc                  10.3       2.2       NA     13.7
+## 10 Deser… Para… &lt;NA&gt;  Erin… lc                  10.3       2.7       NA     13.7
+## # ℹ 42 more rows
+## # ℹ 2 more variables: brainwt &lt;dbl&gt;, bodywt &lt;dbl&gt;</code></pre>
+<ul>
+<li><ol start="2" style="list-style-type: decimal">
+<li>Use mutate() to create a new column called percent_day_awake that
+gives the percentage of the day that each species spends awake. Use
+select() with everything() at the end to verify your calculation.</li>
+</ol></li>
+</ul>
+<pre class="r"><code>How_Much_Awake &lt;- msleep |&gt; 
+  mutate(percent_day_awake = awake / 24 * 100) |&gt; 
+  select(name, percent_day_awake, everything())
 
+How_Much_Awake</code></pre>
+<pre><code>## # A tibble: 83 × 12
+##    name   percent_day_awake genus vore  order conservation sleep_total sleep_rem
+##    &lt;chr&gt;              &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;
+##  1 Cheet…              49.6 Acin… carni Carn… lc                  12.1      NA  
+##  2 Owl m…              29.2 Aotus omni  Prim… &lt;NA&gt;                17         1.8
+##  3 Mount…              40   Aplo… herbi Rode… nt                  14.4       2.4
+##  4 Great…              37.9 Blar… omni  Sori… lc                  14.9       2.3
+##  5 Cow                 83.3 Bos   herbi Arti… domesticated         4         0.7
+##  6 Three…              40   Brad… herbi Pilo… &lt;NA&gt;                14.4       2.2
+##  7 North…              63.8 Call… carni Carn… vu                   8.7       1.4
+##  8 Vespe…              70.8 Calo… &lt;NA&gt;  Rode… &lt;NA&gt;                 7        NA  
+##  9 Dog                 57.9 Canis carni Carn… domesticated        10.1       2.9
+## 10 Roe d…              87.5 Capr… herbi Arti… lc                   3        NA  
+## # ℹ 73 more rows
+## # ℹ 4 more variables: sleep_cycle &lt;dbl&gt;, awake &lt;dbl&gt;, brainwt &lt;dbl&gt;,
+## #   bodywt &lt;dbl&gt;</code></pre>
+</div>
+<div id="storm-question" class="section level2">
+<h2>Storm Question</h2>
+<ul>
+<li><ol start="3" style="list-style-type: decimal">
+<li>Use group_by() and summarise() to calculate the number of storms per
+year.</li>
+</ol></li>
+</ul>
+<pre class="r"><code>How_Many_Storms &lt;- storms |&gt; 
+  group_by(year) |&gt; 
+  summarise(num_storms = n())
+How_Many_Storms</code></pre>
+<pre><code>## # A tibble: 50 × 2
+##     year num_storms
+##    &lt;dbl&gt;      &lt;int&gt;
+##  1  1975        238
+##  2  1976        126
+##  3  1977         92
+##  4  1978        152
+##  5  1979        324
+##  6  1980        335
+##  7  1981        311
+##  8  1982        111
+##  9  1983         88
+## 10  1984        342
+## # ℹ 40 more rows</code></pre>
+<ul>
+<li><ol start="4" style="list-style-type: decimal">
+<li>Use filter() to subset storms to only storms with wind speeds
+greater than 50 knots, then use arrange() to sort by wind
+descending.</li>
+</ol></li>
+</ul>
+<pre class="r"><code>Speedy_Storms &lt;- storms |&gt; 
+  filter(wind &gt; 50) |&gt; 
+  arrange(desc(wind)) |&gt; 
+  select(name, wind, everything())
+Speedy_Storms</code></pre>
+<pre><code>## # A tibble: 7,406 × 13
+##    name     wind  year month   day  hour   lat  long status    category pressure
+##    &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;        &lt;dbl&gt;    &lt;int&gt;
+##  1 Allen     165  1980     8     7    18  21.8 -86.4 hurricane        5      899
+##  2 Gilbert   160  1988     9    14     0  19.7 -83.8 hurricane        5      888
+##  3 Wilma     160  2005    10    19    12  17.3 -82.8 hurricane        5      882
+##  4 Dorian    160  2019     9     1    16  26.5 -77   hurricane        5      910
+##  5 Dorian    160  2019     9     1    18  26.5 -77.1 hurricane        5      910
+##  6 Allen     155  1980     8     5    12  15.9 -70.5 hurricane        5      932
+##  7 Allen     155  1980     8     7    12  21   -84.8 hurricane        5      910
+##  8 Allen     155  1980     8     8     0  22.2 -87.9 hurricane        5      920
+##  9 Allen     155  1980     8     9     6  25   -94.2 hurricane        5      909
+## 10 Gilbert   155  1988     9    14     6  19.9 -85.3 hurricane        5      889
+## # ℹ 7,396 more rows
+## # ℹ 2 more variables: tropicalstorm_force_diameter &lt;int&gt;,
+## #   hurricane_force_diameter &lt;int&gt;</code></pre>
+</div>
+<div id="lizard-questions" class="section level2">
+<h2>Lizard Questions</h2>
+<ul>
+<li><ol start="5" style="list-style-type: decimal">
+<li>Determine which Site and Diameter combination has the highest total
+grahami.</li>
+</ol></li>
+</ul>
+<pre class="r"><code>Grahami_Idk &lt;- lizards |&gt; 
+  group_by(Site, Diameter) |&gt; 
+  summarise(new_grahami = sum(grahami)) |&gt; 
+  arrange(desc(new_grahami))
+Grahami_Idk</code></pre>
+<pre><code>## # A tibble: 4 × 3
+## # Groups:   Site [2]
+##   Site  Diameter new_grahami
+##   &lt;fct&gt; &lt;fct&gt;          &lt;dbl&gt;
+## 1 Shade D &lt;= 2           220
+## 2 Shade D &gt; 2            122
+## 3 Sun   D &lt;= 2            65
+## 4 Sun   D &gt; 2             24</code></pre>
+</div>
 
 
 
