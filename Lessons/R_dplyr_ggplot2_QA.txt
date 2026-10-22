@@ -1,0 +1,575 @@
+==============================================================================
+R PRACTICE SET: dplyr, ggplot2 and data manipulation
+Question / Answer format
+==============================================================================
+How to read this file: each question starts with Q#. The answer follows right below,
+every answer line starts with '|  ' so it stands out from the questions.
+(Plain .txt files cannot hold colors. Open the matching .html file to see the answers
+in color.)
+Total questions: 102
+
+==============================================================================
+PART 1 - dplyr verbs (starwars dataset)
+==============================================================================
+Setup: library(dplyr)  # starwars is built in
+
+Q1. Keep only the droids.
+ANSWER 1:
+|  starwars %>% filter(species == "Droid")
+
+Q2. Keep Humans taller than 180 cm. (two conditions)
+ANSWER 2:
+|  starwars %>% filter(species == "Human", height > 180)
+|  # a comma means AND; same as: filter(species == "Human" & height > 180)
+
+Q3. Keep characters that are either Droid or Wookiee.
+ANSWER 3:
+|  starwars %>% filter(species %in% c("Droid", "Wookiee"))
+|  # or: filter(species == "Droid" | species == "Wookiee")
+
+Q4. Remove rows where height is missing.
+ANSWER 4:
+|  starwars %>% filter(!is.na(height))
+
+Q5. What is the base R equivalent of filter()?
+ANSWER 5:
+|  subset(starwars, species == "Droid")
+
+Q6. Sort by height, smallest first; break ties with mass.
+ANSWER 6:
+|  starwars %>% arrange(height, mass)
+
+Q7. Sort by height, tallest first.
+ANSWER 7:
+|  starwars %>% arrange(desc(height))
+
+Q8. Show rows 5 to 10 only.
+ANSWER 8:
+|  starwars %>% slice(5:10)
+
+Q9. Show the first 3 rows. Show the last 3 rows.
+ANSWER 9:
+|  starwars %>% slice_head(n = 3)
+|  starwars %>% slice_tail(n = 3)
+
+Q10. Get the 5 tallest characters.
+ANSWER 10:
+|  starwars %>% arrange(desc(height)) %>% slice_head(n = 5)
+
+Q11. Take a random sample of 10 rows.
+ANSWER 11:
+|  starwars %>% sample_n(10)
+
+Q12. Keep only the columns name, height and mass.
+ANSWER 12:
+|  starwars %>% select(name, height, mass)
+
+Q13. Keep all columns from hair_color to eye_color (a range).
+ANSWER 13:
+|  starwars %>% select(hair_color:eye_color)
+
+Q14. Drop the columns hair_color through eye_color. Give two ways to drop single columns.
+ANSWER 14:
+|  starwars %>% select(!(hair_color:eye_color))       # drop a range with !
+|  starwars %>% select(-hair_color, -eye_color)         # drop single columns with -
+
+Q15. Select columns by position AND name in the same call.
+ANSWER 15:
+|  starwars %>% select(1, 2, hair_color, eye_color)
+
+Q16. Select all columns whose name contains 'c', starts with 'n', ends with 'd'.
+ANSWER 16:
+|  starwars %>% select(contains("c"))
+|  starwars %>% select(starts_with("n"))
+|  starwars %>% select(ends_with("d"))
+
+Q17. Move height to the front, keep all other columns after it.
+ANSWER 17:
+|  starwars %>% select(height, everything())
+
+Q18. Rename the column name to Character. How would you do it in base R?
+ANSWER 18:
+|  starwars %>% rename(Character = name)
+|  # base R:
+|  colnames(starwars)[colnames(starwars) == "name"] <- "Character"
+
+Q19. Create height_m (height in meters) and keep all columns.
+ANSWER 19:
+|  starwars %>% mutate(height_m = height / 100)
+
+Q20. Same, but keep ONLY the new column.
+ANSWER 20:
+|  starwars %>% mutate(height_m = height / 100, .keep = "none")
+
+Q21. Create a BMI column: mass / (height in m)^2.
+ANSWER 21:
+|  starwars %>% mutate(bmi = mass / (height / 100)^2)
+
+Q22. Create height_cat: 'tall' if height > 100, otherwise 'small'.
+ANSWER 22:
+|  starwars %>% mutate(height_cat = ifelse(height > 100, "tall", "small"))
+|  # ifelse(condition, value_if_TRUE, value_if_FALSE)
+
+Q23. Compute the mean height of all characters (ignore NA).
+ANSWER 23:
+|  starwars %>% summarise(mean_height = mean(height, na.rm = TRUE))
+
+Q24. Mean and standard deviation of height for each species.
+ANSWER 24:
+|  starwars %>%
+|    group_by(species) %>%
+|    summarise(mean_height = mean(height, na.rm = TRUE),
+|              sd_height   = sd(height, na.rm = TRUE))
+|  # sd is NA for species with only one character
+
+Q25. Mean height for each homeworld AND gender.
+ANSWER 25:
+|  starwars %>%
+|    group_by(homeworld, gender) %>%
+|    summarise(mean_height_by_gender = mean(height, na.rm = TRUE))
+|  # R prints a message: summarise() has grouped output by 'homeworld' (harmless)
+
+Q26. Count the characters in each species, largest group first.
+ANSWER 26:
+|  starwars %>% count(species, sort = TRUE)
+
+Q27. In the class example, summarise(height = mean(height, na.rm = TRUE), min = min(height, na.rm = TRUE)) gave min = 175 instead of the real minimum. Why, and how do you fix it?
+ANSWER 27:
+|  Because the first line CREATES a column called height (the mean, 175), and the next line then
+|  uses that new height instead of the original one. Fix: give the new columns different names.
+|  starwars %>% summarise(mean_h = mean(height, na.rm = TRUE),
+|                         min_h  = min(height, na.rm = TRUE),
+|                         max_h  = max(height, na.rm = TRUE))
+
+==============================================================================
+PART 2 - dplyr pipelines (gapminder and penguins)
+==============================================================================
+Setup: library(dplyr); library(gapminder); library(palmerpenguins)
+
+Q28. gapminder: what class is the dataset?
+ANSWER 28:
+|  class(gapminder)   # "tbl_df" "tbl" "data.frame"
+
+Q29. gapminder: rows where life expectancy is below 29.
+ANSWER 29:
+|  gapminder %>% filter(lifeExp < 29)
+
+Q30. gapminder: Rwanda after 1979, showing only year and lifeExp.
+ANSWER 30:
+|  gapminder %>%
+|    filter(country == "Rwanda", year > 1979) %>%
+|    select(year, lifeExp)
+
+Q31. gapminder: all columns except gdpPercap, saved as a new object.
+ANSWER 31:
+|  gap_no_gdp <- gapminder %>% select(-gdpPercap)
+
+Q32. gapminder: only countries in Africa. Then list each country once.
+ANSWER 32:
+|  gapminder %>% filter(continent == "Africa")
+|  gapminder %>% filter(continent == "Africa") %>% distinct(country)
+
+Q33. gapminder: add lifeExp_months (life expectancy in months).
+ANSWER 33:
+|  gapminder %>% mutate(lifeExp_months = lifeExp * 12)
+
+Q34. gapminder: total GDP per row (pop * gdpPercap) as gdp_total.
+ANSWER 34:
+|  gapminder %>% mutate(gdp_total = pop * gdpPercap)
+
+Q35. gapminder: mean life expectancy per continent in 2007.
+ANSWER 35:
+|  gapminder %>%
+|    filter(year == 2007) %>%
+|    group_by(continent) %>%
+|    summarise(mean_life = mean(lifeExp))
+
+Q36. gapminder: the 6 observations with the highest life expectancy.
+ANSWER 36:
+|  gapminder %>% arrange(desc(lifeExp)) %>% head(6)
+
+Q37. penguins: only Adelie penguins.
+ANSWER 37:
+|  penguins %>% filter(species == "Adelie")
+
+Q38. penguins: number of penguins on each island.
+ANSWER 38:
+|  penguins %>% count(island)   # Biscoe 168, Dream 124, Torgersen 52
+
+Q39. penguins: number of penguins for each species-island combination.
+ANSWER 39:
+|  penguins %>% count(species, island)
+
+Q40. penguins: mean body mass per species, ignoring NA.
+ANSWER 40:
+|  penguins %>%
+|    group_by(species) %>%
+|    summarise(mean_mass = mean(body_mass_g, na.rm = TRUE))
+
+Q41. penguins: mean body mass per species AND sex, dropping rows where sex is missing.
+ANSWER 41:
+|  penguins %>%
+|    filter(!is.na(sex)) %>%
+|    group_by(species, sex) %>%
+|    summarise(mean_mass = mean(body_mass_g, na.rm = TRUE))
+
+Q42. penguins: add body_mass_kg and a size label 'large' if heavier than 4000 g, else 'small'.
+ANSWER 42:
+|  penguins %>%
+|    mutate(body_mass_kg = body_mass_g / 1000,
+|           size = ifelse(body_mass_g > 4000, "large", "small"))
+
+Q43. penguins: Gentoo with flippers longer than 220 mm; show species, island, flipper_length_mm, longest first.
+ANSWER 43:
+|  penguins %>%
+|    filter(species == "Gentoo", flipper_length_mm > 220) %>%
+|    select(species, island, flipper_length_mm) %>%
+|    arrange(desc(flipper_length_mm))
+
+Q44. penguins: keep only the columns that start with 'bill'.
+ANSWER 44:
+|  penguins %>% select(starts_with("bill"))
+
+Q45. What does the pipe %>% do, what is its shortcut, and what is the base R version?
+ANSWER 45:
+|  It passes the result of one step into the next one; read it as "then".
+|  Shortcut: Ctrl + Shift + M (Mac: Shift + Cmd + M). Base R pipe: |>  (R 4.1+, no package needed).
+|  Rewrite f(g(h(data))) as: data %>% h() %>% g() %>% f()
+
+==============================================================================
+PART 3 - Data manipulation in base R
+==============================================================================
+Setup: nothing to load unless noted. Practice objects are created inside each answer.
+
+Q46. Create the vector 2, 4, 6, 8, 10 and find its mean and sum.
+ANSWER 46:
+|  x <- c(2, 4, 6, 8, 10)
+|  mean(x)   # 6
+|  sum(x)    # 30
+
+Q47. Add the vectors a <- c(1,2,3,4,5) and b <- c(6,7,8,9,10); then multiply them.
+ANSWER 47:
+|  a + b   # 7  9 11 13 15
+|  a * b   # 6 14 24 36 50   (element by element)
+
+Q48. Sort c(3, 2, 20, 25, 5).
+ANSWER 48:
+|  sort(c(3, 2, 20, 25, 5))   # 2 3 5 20 25
+
+Q49. From x <- c(2,4,6,8,10) get the 3rd element, elements 2 to 4, and values greater than 5.
+ANSWER 49:
+|  x[3]       # 6
+|  x[2:4]     # 4 6 8
+|  x[x > 5]   # 6 8 10
+
+Q50. What does c(1, 'a', TRUE) return and why?
+ANSWER 50:
+|  "1" "a" "TRUE"  -> a vector holds ONE type, so everything is coerced to character.
+
+Q51. Give the class of: 5L, TRUE, 'text', 2.5, factor('a'), matrix(1:4, 2).
+ANSWER 51:
+|  class(5L)              # "integer"
+|  class(TRUE)            # "logical"
+|  class("text")          # "character"
+|  class(2.5)             # "numeric"
+|  class(factor("a"))     # "factor"
+|  class(matrix(1:4, 2))  # "matrix" "array"
+
+Q52. Create a list with a numeric vector called Numbers and a character vector called Words.
+ANSWER 52:
+|  my_list <- list(Numbers = c(1, 2, 3, 4, 5),
+|                  Words   = c("apple", "banana", "cherry"))
+|  my_list$Numbers
+
+Q53. Create a 3x3 matrix with 1:9 filled by rows.
+ANSWER 53:
+|  matrix(data = 1:9, nrow = 3, ncol = 3, byrow = TRUE)
+
+Q54. Create a data frame with species A, B, C and mass 10, 20, 30. Get the mass column and row 2.
+ANSWER 54:
+|  df <- data.frame(species = c("A", "B", "C"), mass = c(10, 20, 30))
+|  df$mass     # 10 20 30
+|  df[2, ]     # row 2
+
+Q55. What do df[,1], df[1,] and df[1,1] return?
+ANSWER 55:
+|  df[,1]   # the first COLUMN
+|  df[1,]   # the first ROW
+|  df[1,1]  # row 1, column 1   (format is [row, column])
+
+Q56. Using penguins: get rows 2 to 10 of column 1, and elements 2 to 15 of the island column.
+ANSWER 56:
+|  penguins[2:10, 1]
+|  penguins$island[2:15]
+
+Q57. Why does penguins$body_mass return NULL?
+ANSWER 57:
+|  There is no column with that name. The real name is body_mass_g (names must match exactly,
+|  and R is case sensitive).
+
+Q58. Mean and median body mass of penguins, ignoring missing values.
+ANSWER 58:
+|  mean(penguins$body_mass_g, na.rm = TRUE)     # 4201.754
+|  median(penguins$body_mass_g, na.rm = TRUE)   # 4050
+
+Q59. Count penguins per island and give the proportions.
+ANSWER 59:
+|  table(penguins$island)               # Biscoe 168  Dream 124  Torgersen 52
+|  prop.table(table(penguins$island))   # 0.488  0.360  0.151
+
+Q60. Which functions give a quick overview of a data frame?
+ANSWER 60:
+|  head(df)       # first rows
+|  str(df)        # structure: column types and first values
+|  summary(df)    # min, quartiles, mean, max, NA count
+|  colnames(df)   # column names
+
+Q61. Calculate the average of the grades 80, 90, 75, 95, 85 and store it in average.
+ANSWER 61:
+|  grades  <- c(80, 90, 75, 95, 85)
+|  average <- mean(grades)
+|  average   # 85
+
+Q62. Create a new column and bind it to a data frame in base R.
+ANSWER 62:
+|  df$mass_kg <- df$mass / 1000        # with $
+|  df <- cbind(df, group = c(1, 1, 2)) # with cbind
+
+Q63. Compute the mean density for each concentration in DNase (built-in) using base R.
+ANSWER 63:
+|  aggregate(density ~ conc, data = DNase, FUN = mean)
+
+Q64. Sort a data frame by age in base R.
+ANSWER 64:
+|  coronary <- coronary[order(coronary$age), ]
+
+Q65. Write a function that converts Celsius to Fahrenheit, then test it with 100.
+ANSWER 65:
+|  celsius_to_fahrenheit <- function(temp_C) {
+|    temp_F <- temp_C * 9 / 5 + 32
+|    return(temp_F)
+|  }
+|  celsius_to_fahrenheit(100)   # 212
+
+Q66. Read a CSV, a tab-separated text file and an Excel file.
+ANSWER 66:
+|  data <- read.csv("file.csv")
+|  data <- read.table("file.txt", header = TRUE, sep = "\t")
+|  library(readxl); data <- read_excel("file.xlsx", sheet = 1)
+
+Q67. How do you check and change the working directory? What path style do you use?
+ANSWER 67:
+|  getwd()
+|  setwd("c:/docs/mydir")   # forward slashes /, never backslashes
+|  # In R Markdown the working directory is the folder where the .Rmd is saved.
+
+Q68. What does R mean when the console shows '+' instead of '>'?
+ANSWER 68:
+|  The command is incomplete (missing parenthesis or quote). Finish it or press Esc to cancel.
+
+Q69. Install and load a package; cite R and a package.
+ANSWER 69:
+|  install.packages("dplyr")   # once
+|  library(dplyr)              # every session
+|  citation()                  # cite R
+|  citation("dplyr")           # cite a package
+
+==============================================================================
+PART 4 - ggplot2
+==============================================================================
+Setup: library(ggplot2); library(dplyr); library(palmerpenguins)  # mpg and trees are built in
+
+Q70. What are the three components every ggplot needs?
+ANSWER 70:
+|  1) data, 2) aesthetic mappings aes(), 3) a geom. Everything else has defaults.
+
+Q71. Difference between ggplot2 and ggplot?
+ANSWER 71:
+|  ggplot2 is the package; ggplot() is the function you run.
+
+Q72. Scatter plot of highway mileage (hwy) against engine size (displ).
+ANSWER 72:
+|  ggplot(data = mpg, aes(x = displ, y = hwy)) +
+|    geom_point()
+
+Q73. Same plot, colored by drive type (drv).
+ANSWER 73:
+|  ggplot(mpg, aes(x = displ, y = hwy, color = drv)) +
+|    geom_point()
+
+Q74. Penguins: flipper length vs body mass, color AND shape by species.
+ANSWER 74:
+|  ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+|    geom_point(aes(color = species, shape = species))
+
+Q75. Make the points semi-transparent and bigger.
+ANSWER 75:
+|  ggplot(mpg, aes(x = displ, y = hwy)) +
+|    geom_point(alpha = 0.4, size = 3)
+
+Q76. Add a linear trend line to the hwy vs displ scatter.
+ANSWER 76:
+|  ggplot(mpg, aes(x = displ, y = hwy)) +
+|    geom_point() +
+|    geom_smooth(method = "lm")
+
+Q77. What is the difference between global and local aesthetics? Show both.
+ANSWER 77:
+|  # Global: inside ggplot(), applies to every geom
+|  ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point() + geom_smooth()
+|  # Local: inside one geom, applies only to that layer
+|  ggplot(data = mpg) +
+|    geom_point(aes(x = displ, y = hwy)) +
+|    geom_smooth(aes(x = displ, y = hwy))
+
+Q78. Histogram of tree Girth (trees dataset).
+ANSWER 78:
+|  ggplot(trees, aes(x = Girth)) +
+|    geom_histogram(bins = 10, fill = "steelblue", color = "white")
+|  # default is 30 bins; change with bins = or binwidth =
+
+Q79. Histogram of hwy filled by drive type.
+ANSWER 79:
+|  ggplot(mpg, aes(x = hwy, fill = drv)) +
+|    geom_histogram(bins = 15)
+
+Q80. Density plot of hwy.
+ANSWER 80:
+|  ggplot(mpg, aes(x = hwy)) + geom_density()
+
+Q81. Scatter plot of tree Girth vs Volume.
+ANSWER 81:
+|  ggplot(trees, aes(x = Girth, y = Volume)) + geom_point()
+
+Q82. Bar chart of the number of cars in each class.
+ANSWER 82:
+|  ggplot(mpg, aes(x = class)) + geom_bar()   # geom_bar() counts rows for you
+
+Q83. Bar chart of the MEAN hwy for each class (values already computed).
+ANSWER 83:
+|  mpg %>%
+|    group_by(class) %>%
+|    summarise(mean_hwy = mean(hwy)) %>%
+|    ggplot(aes(x = class, y = mean_hwy)) +
+|    geom_col()   # geom_col() uses values you already have
+
+Q84. geom_bar() vs geom_col()?
+ANSWER 84:
+|  geom_bar() counts observations; geom_col() plots a y value you supply.
+
+Q85. Boxplot of hwy for each vehicle class.
+ANSWER 85:
+|  ggplot(mpg, aes(x = class, y = hwy)) + geom_boxplot()
+
+Q86. Show every point of hwy by drive type without overlap.
+ANSWER 86:
+|  ggplot(mpg, aes(x = drv, y = hwy)) + geom_jitter()   # jitter = small random spread
+
+Q87. Line plot of Rwanda's life expectancy over time (gapminder).
+ANSWER 87:
+|  library(gapminder)
+|  gapminder %>%
+|    filter(country == "Rwanda") %>%
+|    ggplot(aes(x = year, y = lifeExp)) +
+|    geom_line()
+
+Q88. Split the hwy vs displ scatter into one panel per drive type.
+ANSWER 88:
+|  ggplot(mpg, aes(x = displ, y = hwy)) +
+|    geom_point() +
+|    facet_wrap(~ drv)
+
+Q89. Panels by two variables: rows = drv, columns = cyl.
+ANSWER 89:
+|  ggplot(mpg, aes(x = displ, y = hwy)) +
+|    geom_point() +
+|    facet_grid(drv ~ cyl)   # first variable = rows, second = columns
+
+Q90. Add a title and axis labels, and a clean theme.
+ANSWER 90:
+|  ggplot(mpg, aes(x = displ, y = hwy)) +
+|    geom_point() +
+|    labs(title = "Highway mileage vs engine size",
+|         x = "Engine displacement (L)", y = "Highway mileage (mpg)") +
+|    theme_minimal()
+
+Q91. Pipe a dplyr step into ggplot: histogram of starwars height filled by a new tall/small category.
+ANSWER 91:
+|  starwars %>%
+|    mutate(height_cat = ifelse(height > 100, "tall", "small")) %>%
+|    ggplot(aes(x = height, fill = height_cat)) +
+|    geom_histogram()
+
+Q92. Save a plot to a file.
+ANSWER 92:
+|  p <- ggplot(mpg, aes(x = displ, y = hwy)) + geom_point()
+|  print(p)                      # display a stored plot
+|  ggsave("my_plot.png", plot = p)
+
+Q93. Difference between color and fill?
+ANSWER 93:
+|  color = points and lines/outlines; fill = the inside of areas (bars, histograms).
+|  alpha = transparency, shape = point shape, linetype = solid/dashed, size = size.
+
+Q94. This code gives an error. What is wrong and how do you fix it?
+    ggplot(mpg, aes(x = displ, y = hwy))
+      + geom_point()
+ANSWER 94:
+|  The + starts the new line, so R thinks the first line is complete. The + must END the line:
+|  ggplot(mpg, aes(x = displ, y = hwy)) +
+|    geom_point()
+|  (Same rule for the pipe: %>% goes at the END of a line.)
+
+Q95. What is the order of layers in the ggplot2 'recipe'?
+ANSWER 95:
+|  data -> aesthetics -> geom -> stat/position (optional) -> coord (optional) -> facets (optional)
+|  -> scales (optional) -> theme (optional); each layer is added with +.
+
+==============================================================================
+PART 5 - Tests and base plots that appear alongside
+==============================================================================
+Setup: coronary data read with readxl::read_excel("data/coronary.xlsx"); trees is built in.
+
+Q96. Test whether tree Volume is normally distributed and interpret.
+ANSWER 96:
+|  shapiro.test(trees$Volume)
+|  # W = 0.888, p = 0.0036 < 0.05 -> reject normality: Volume is NOT normally distributed.
+
+Q97. Same for Girth.
+ANSWER 97:
+|  shapiro.test(trees$Girth)
+|  # W = 0.941, p = 0.089 > 0.05 -> cannot reject normality: consistent with a normal distribution.
+
+Q98. Spearman correlation between chol and dbp, and how to read it.
+ANSWER 98:
+|  cor.test(coronary$chol, coronary$dbp, method = "spearman", exact = FALSE)
+|  # rho = 0.369, p < 0.001: significant positive monotonic relationship.
+|  # rho > 0: both rise together; rho < 0: one rises as the other falls.
+|  # exact = FALSE avoids warnings caused by tied ranks.
+
+Q99. Test whether mean sbp differs by gender, and check the assumptions.
+ANSWER 99:
+|  anova_model <- aov(sbp ~ gender, data = coronary)
+|  summary(anova_model)                          # F = 0.04, p = 0.842: no difference
+|  shapiro.test(residuals(anova_model))          # normal residuals? p = 0.0001 -> violated
+|  bartlett.test(sbp ~ gender, data = coronary)  # equal variances? p = 0.030 -> violated
+
+Q100. Base R: histogram, boxplot by group and scatter with regression line.
+ANSWER 100:
+|  hist(coronary$chol, col = "lightblue", border = "white", main = "Cholesterol")
+|  boxplot(sbp ~ gender, data = coronary, col = "lightblue")
+|  plot(coronary$dbp ~ coronary$chol, col = "blue")
+|  abline(lm(dbp ~ chol, data = coronary), col = "red", lwd = 2, lty = 2)
+
+Q101. Base R bar plot of mean density per concentration (DNase).
+ANSWER 101:
+|  mean_density <- aggregate(density ~ conc, data = DNase, FUN = mean)
+|  barplot(height = mean_density$density, names.arg = mean_density$conc,
+|          col = "lightblue", xlab = "Concentration (mg/mL)", ylab = "Mean Optical Density",
+|          las = 2, cex.names = 0.8)    # horiz = TRUE for horizontal bars
+
+Q102. plot() type argument: what do 'p', 'l' and 'o' draw?
+ANSWER 102:
+|  "p" = points only, "l" = lines only, "o" = points and lines.
+|  For a line chart, sort the data on the x variable first (order()).
+
