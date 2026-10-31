@@ -1,0 +1,70 @@
+---
+title: "R Tutorial 4"
+author: "Adler Torres"
+date: "`r format(Sys.time(), '%Y-%b-%d, %I:%M %p')`"
+---
+### Calling packages
+```{r message=FALSE}
+library(tidyverse)
+library(lessR)
+library(readxl)
+library(BSDA)
+library(dplyr)
+library(lsr)
+```
+
+### Creating data set object
+```{r}
+butterflies <- read_excel("/Users/adlertorres/Documents/Maestria Stuff/R class/Introduction-to-R-2026-Adler-Torres/Lessons/butterflies_pesticides.xlsx")
+head(butterflies)
+```
+
+### Q1. Normality test / Prueba de normalidad (10pts)
+```{r}
+shapiro.test(butterflies$`Wing Length`)
+```
+After conducting a Shapiro-Wilk normality test, it can be concluded that this data is normally distributed because its p-values does not go over 0.05. 
+
+### Q2. Equality of variances test / Prueba de igualdad de varianzas (10pts)
+```{r}
+var.test(`Wing Length` ~ Group, data = butterflies)
+```
+Through a variance test, it was found that the variance between groups is not equal, due to the resulting test revealing a p-value less then 0.05. 
+
+Q3. Statistical test / Prueba estadística (20pts)
+```{r}
+t.test(filter(butterflies, Group == "group1")$`Wing Length`, 
+       filter(butterflies, Group == "group2")$`Wing Length`,
+       alternative = "two.sided",
+       mu = 0, 
+       paired = FALSE, 
+       var.equal = FALSE)
+```
+```{r}
+cohensD(`Wing Length` ~ Group, data=butterflies)
+```
+After conducting out statistical analysis tests, we were able to find that there exists significant differences between our groups due to the t-test revealing a values of 3.98 and a p-value of 1.72 x 10^4, and this difference being meaningfully large due to its effect size of 0,89066.
+
+### Q4. ggplot (20pts)
+```{r}
+colors <- c('lightpink' )
+butterfly_plot <- ggplot(butterflies, aes(x = Group,
+                        y = `Wing Length`)) + 
+  geom_boxplot(fill = colors) +
+  labs(x= "Group",
+       y= "Wing Length"
+       ) +
+  theme_grey() +
+  theme(legend.position = 'none') +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(size = 10),
+    axis.text.y = element_text(size = 10)
+  )
+butterfly_plot
+```
+
+### Q5. Summary paragraph / Párrafo de resumen (40pts)
+We tested to see if there was a significant difference in butterfly development between individuals that were exposed to a pesticide and those who were not. Using a two-tailed independent t-test, we compared 80 individuals, these of which were subdivided into two groups of 40, group 1 being the control while group 2 were exposed to the pesticide. These tests revealed that there does exist a significant and meaningful difference between these groups (t~66~ = 3.9832, p < 1.72 x 10^-4^, ES = 0.89). These results indicate that individuals not exposed to pesticide during early stages of development are more likely to reach larger wing sizes during maturity, leading to assume that those exposed to the pesticide will be at a physical disadvantage in the wild. 
